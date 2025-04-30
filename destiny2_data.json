@@ -1,0 +1,93 @@
+{
+  "characters": [
+    {
+      "id": "1746052548069",
+      "name": "Zavala",
+      "subclass": "Sentinel",
+      "class": "Titan",
+      "weapons": [
+        {
+          "name": "The Recluse",
+          "perk": "Random Perk"
+        }
+      ],
+      "armor": [
+        {
+          "name": "Helm of Saint-14",
+          "rarity": "Random Rarity",
+          "stats": {
+            "mobility": 5,
+            "resilience": 5,
+            "recovery": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "1746052587208",
+      "name": "Ikora",
+      "subclass": "Voidwalker",
+      "class": "Warlock",
+      "weapons": [
+        {
+          "name": "Anarchy",
+          "perk": "Random Perk"
+        }
+      ],
+      "armor": [
+        {
+          "name": "Dunemarchers",
+          "rarity": "Random Rarity",
+          "stats": {
+            "mobility": 5,
+            "resilience": 5,
+            "recovery": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "1746052603405",
+      "name": "Cayde-6",
+      "subclass": "Gunslinger",
+      "class": "Hunter",
+      "weapons": [
+        {
+          "name": "Ace of Spades",
+          "perk": "Random Perk"
+        }
+      ],
+      "armor": [
+        {
+          "name": "Celestial Nighthawk",
+          "rarity": "Random Rarity",
+          "stats": {
+            "mobility": 5,
+            "resilience": 5,
+            "recovery": 5
+          }
+        }
+      ]
+    }
+  ],
+  "inventory_items": [
+    {
+      "id": "inv1",
+      "name": "Glimmer",
+      "type": "Currency",
+      "quantity": 1000
+    },
+    {
+      "id": "inv2",
+      "name": "Enhancement Prism",
+      "type": "Upgrade Material",
+      "quantity": 5
+    },
+    {
+      "id": "inv3",
+      "name": "Ascendant Shard",
+      "type": "Upgrade Material",
+      "quantity": 3
+    }
+  ]
+}

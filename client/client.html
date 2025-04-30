@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Destiny 2 API</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    
+    input[type="text"], select {
+      width: 200px;
+      padding: 8px;
+      margin: 5px;
+    }
+
+    button {
+      padding: 8px;
+      margin: 5px;
+    }
+
+    .form-section {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Destiny 2 Character and Gear Viewer</h1>
+
+  
+  <h2>Filter Characters</h2>
+  <input type="text" id="subclassFilter" placeholder="Filter by subclass (e.g., Striker)">
+  <button onclick="filterCharacters()">Filter Characters</button>
+
+  
+  <h2>Characters</h2>
+  <ul id="characterList"></ul>
+
+  
+  <h2>Character Gear</h2>
+  <div id="characterGear"></div>
+
+  
+  <h2>Add New Character</h2>
+  <form id="addCharacterForm">
+    <div class="form-section">
+      <input type="text" id="newCharacterName" placeholder="Character Name" required>
+    </div>
+
+    <div class="form-section">
+      <label for="newCharacterClass">Class: </label>
+      <select id="newCharacterClass">
+        <option value="Titan">Titan</option>
+        <option value="Warlock">Warlock</option>
+        <option value="Hunter">Hunter</option>
+      </select>
+      <button type="button" onclick="generateRandomClass()">Generate Random Class</button>
+    </div>
+
+    <div class="form-section">
+      <label for="newCharacterSubclass">Subclass: </label>
+      <input type="text" id="newCharacterSubclass" placeholder="Subclass" required>
+      <button type="button" onclick="generateRandomSubclass()">Generate Random Subclass</button>
+    </div>
+
+    <div class="form-section">
+      <label for="newCharacterWeapon">Weapon: </label>
+      <input type="text" id="newCharacterWeapon" placeholder="Weapon">
+      <button type="button" onclick="generateRandomWeapon()">Generate Random Weapon</button>
+    </div>
+
+    <div class="form-section">
+      <label for="newCharacterArmor">Armor: </label>
+      <input type="text" id="newCharacterArmor" placeholder="Armor">
+      <button type="button" onclick="generateRandomArmor()">Generate Random Armor</button>
+    </div>
+
+    <button type="submit">Add Character</button>
+  </form>
+
+  
+  <script>
+    // Fetch and display all characters
+    function fetchCharacters(subclass = '') {
+      const url = subclass ? `/data/characters?subclass=${subclass}` : '/data/characters';
+      fetch(url)
+        .then(response => response.json())
+        .then(characters => {
+          const characterList = document.getElementById('characterList');
+          characterList.innerHTML = '';
+          characters.forEach(character => {
+            const li = document.createElement('li');
+            li.textContent = `${character.name} - ${character.subclass}`;
+            li.addEventListener('click', () => fetchCharacterGear(character.id));  // Show gear on click
+
+            // Add delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = function() {
+              deleteCharacter(character.id);
+            };
+            li.appendChild(deleteButton);
+            characterList.appendChild(li);
+          });
+        })
+        .catch(error => console.error('Error fetching characters:', error));
+    }
+
+    // Fetch and display specific character's gear
+    function fetchCharacterGear(id) {
+      fetch(`/data/characters/${id}`)
+        .then(response => response.json())
+        .then(character => {
+          if (!character || !character.weapons || !character.armor) {
+            console.error('Character has no gear data.');
+            const gearDiv = document.getElementById('characterGear');
+            gearDiv.innerHTML = `<p>No gear available for this character.</p>`;
+            return;
+          }
+
+          const gearDiv = document.getElementById('characterGear');
+          gearDiv.innerHTML = `
+            <h3>Weapons:</h3>
+            <ul>
+              ${character.weapons.map(weapon => `<li>${weapon.name} - ${weapon.perk}</li>`).join('')}
+            </ul>
+            <h3>Armor:</h3>
+            <ul>
+              ${character.armor.map(armor => `<li>${armor.name} - ${armor.rarity} - Mobility: ${armor.stats.mobility}</li>`).join('')}
+            </ul>
+          `;
+        })
+        .catch(error => {
+          console.error('Error fetching character gear:', error);
+          const gearDiv = document.getElementById('characterGear');
+          gearDiv.innerHTML = `<p>Error loading character gear.</p>`;
+        });
+    }
+
+    // Filter characters
+    function filterCharacters() {
+      const subclass = document.getElementById('subclassFilter').value;
+      fetchCharacters(subclass);
+    }
+
+    // Generate random subclass based on selected class
+    function generateRandomSubclass() {
+      const className = document.getElementById('newCharacterClass').value;
+      const titanSubclasses = ["Striker", "Sunbreaker", "Sentinel"];
+      const warlockSubclasses = ["Dawnblade", "Stormcaller", "Voidwalker"];
+      const hunterSubclasses = ["Nightstalker", "Gunslinger", "Arcstrider"];
+
+      let randomSubclass;
+
+      if (className === "Titan") {
+        randomSubclass = titanSubclasses[Math.floor(Math.random() * titanSubclasses.length)];
+      } else if (className === "Warlock") {
+        randomSubclass = warlockSubclasses[Math.floor(Math.random() * warlockSubclasses.length)];
+      } else if (className === "Hunter") {
+        randomSubclass = hunterSubclasses[Math.floor(Math.random() * hunterSubclasses.length)];
+      }
+
+      document.getElementById('newCharacterSubclass').value = randomSubclass;
+    }
+
+    // Generate random class
+    function generateRandomClass() {
+      const classes = ["Titan", "Warlock", "Hunter"];
+      const randomClass = classes[Math.floor(Math.random() * classes.length)];
+      document.getElementById('newCharacterClass').value = randomClass;
+      generateRandomSubclass();  // Generate subclass after class is chosen
+    }
+
+    // Generate random weapon
+    function generateRandomWeapon() {
+      const weapons = [
+        "The Last Word",
+        "Anarchy",
+        "Ace of Spades",
+        "The Recluse"
+      ];
+      const randomWeapon = weapons[Math.floor(Math.random() * weapons.length)];
+      document.getElementById('newCharacterWeapon').value = randomWeapon;
+    }
+
+    // Generate random armor
+    function generateRandomArmor() {
+      const armor = [
+        "Dunemarchers",
+        "Helm of Saint-14",
+        "St0mp-EE5",
+        "Celestial Nighthawk"
+      ];
+      const randomArmor = armor[Math.floor(Math.random() * armor.length)];
+      document.getElementById('newCharacterArmor').value = randomArmor;
+    }
+
+    // Delete character
+    function deleteCharacter(id) {
+      fetch(`/data/characters/${id}`, {
+        method: 'DELETE'
+      })
+      .then(() => {
+        fetchCharacters();  // Refresh the character list after deletion
+      })
+      .catch(error => {
+        console.error('Error deleting character:', error);
+      });
+    }
+
+    // Add new character
+    document.getElementById('addCharacterForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('newCharacterName').value;
+      const subclass = document.getElementById('newCharacterSubclass').value;
+      const className = document.getElementById('newCharacterClass').value;
+      const weapon = document.getElementById('newCharacterWeapon').value;
+      const armor = document.getElementById('newCharacterArmor').value;
+
+      const newCharacter = { 
+        id: Date.now().toString(), 
+        name, 
+        subclass, 
+        class: className,
+        weapons: [{ name: weapon, perk: "Random Perk" }],
+        armor: [{ name: armor, rarity: "Random Rarity", stats: { mobility: 5, resilience: 5, recovery: 5 }}]
+      };
+
+      fetch('/data/characters', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCharacter)
+      })
+      .then(response => response.json())
+      .then(character => {
+        alert(`Character added: ${character.name}`);
+        fetchCharacters();  // Refresh the character list
+      })
+      .catch(error => console.error('Error adding character:', error));
+    });
+
+    // Initial fetch for characters on page load
+    fetchCharacters();
+  </script>
+</body>
+</html>
